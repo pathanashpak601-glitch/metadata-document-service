@@ -8,9 +8,48 @@ on:
         required: true
         default: dev
         options:
-          -dev
-          -cdt
-          -preprod
-          -prod
-     service:
-       type:choice
+          - dev
+          - cdt
+          - preprod
+          - prod
+      service:
+       type: choice
+       description: "Choose the service name"
+       required: true
+       default: "metadata-service"
+       options: 
+         - metadata-service
+         - indexing-service
+         - caching-service
+      clusterregion:
+        type: choice
+        description: "Choose the region to deploy"
+        required: true
+        default: "westeurope-1"
+        options:
+          - westeurope-1
+          - northeurope-1
+env:
+  APP_NAME: anchor_rbac_Service_${{github.event.inputs.service}}
+  VAULT_DIR: ${{github.event.inputs.env == 'dev' || github.event.inputs.env == 'cdt' }}
+  VAULT_DIR_RETRIEVAL: ${{github.event.inputs.env == 'dev' && 'dev' || 'cdt' }}
+  CLUSTER_ENV: ${{ github.event.inputs.clusterregion }} 
+  ACR : azure.acr.io
+jobs: 
+  set-image-tag:
+    runs-on: ubuntu-22.04
+    env: 
+      GITHUB-TOKEN: $ {{secrets.GITHUB_TOKEN }}
+      BRANCH_NAME: ${{GITHUB_REF#refs/heads/}}
+      BUILD_NUMBER: ${GITHUB_RUN_NUMBER}
+      COMMIT_ID: ${GITHUB_SHA}
+    outputs:
+      image-tag: ${{ steps.image_tag.outputs.IMAGE_TAG }}
+    steps:
+      - id: image_tag
+        #added harbor registry to image tag
+        run: echo "##[set-output name=IMAGE_TAG;]$(echo ${{env.ACR}}/anchorrbac/${{ env.APP_NAME}}:${{ env.BRANCH_NAME}}-${{ github.event.inputs.env }}-${{ env.BUILD_NUMBER }}-${{ env.COMMIT_ID }}-${{ env.CLUSTER_REGION }}-mt)"
+    
+          
+
+        
