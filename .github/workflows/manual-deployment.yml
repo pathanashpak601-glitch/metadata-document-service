@@ -1,0 +1,16 @@
+name: Deploy the build to multiple clusters
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: "Choose env to deploy"
+        required: true
+        default: dev
+        options:
+          -dev
+          -cdt
+          -preprod
+          -prod
+     service:
+       type:choice
