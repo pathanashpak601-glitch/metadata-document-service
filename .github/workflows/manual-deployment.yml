@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
     env: 
       GITHUB-TOKEN: $ {{secrets.GITHUB_TOKEN }}
-      BRANCH_NAME: ${{GITHUB_REF#refs/heads/}}
+      BRANCH_NAME: ${{GITHUB_REF.ref_name}}
       BUILD_NUMBER: ${GITHUB_RUN_NUMBER}
       COMMIT_ID: ${GITHUB_SHA}
     outputs:
